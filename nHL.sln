@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nHL.Web", "nHL.Web\nHL.Web.csproj", "{2E58724D-0FEF-4CA3-8398-BE2F921E1971}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nHL.Domain", "nHL.Domain\nHL.Domain.csproj", "{D32B5B82-6CDC-41CC-9CEA-49C949F2CE42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nHL.Persistence", "nHL.Persistence\nHL.Persistence.csproj", "{98F7C958-181D-4ADB-953F-0C8667508054}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{2E58724D-0FEF-4CA3-8398-BE2F921E1971}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E58724D-0FEF-4CA3-8398-BE2F921E1971}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E58724D-0FEF-4CA3-8398-BE2F921E1971}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D32B5B82-6CDC-41CC-9CEA-49C949F2CE42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D32B5B82-6CDC-41CC-9CEA-49C949F2CE42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D32B5B82-6CDC-41CC-9CEA-49C949F2CE42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D32B5B82-6CDC-41CC-9CEA-49C949F2CE42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98F7C958-181D-4ADB-953F-0C8667508054}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98F7C958-181D-4ADB-953F-0C8667508054}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98F7C958-181D-4ADB-953F-0C8667508054}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98F7C958-181D-4ADB-953F-0C8667508054}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
