@@ -6,11 +6,13 @@ namespace nHL.Domain
 {
     public class LocalizedStringResource
     {
-        public string Key { get; set; }
+        public virtual string Key { get; set; }
 
-        public string Resource { get; set; }
+        public virtual string Resource { get; set; }
 
-        public string Text { get; set; }
+        public virtual string Text { get; set; }
+
+        public virtual Culture Culture { get; set; }
 
     }
 }
