@@ -3,8 +3,10 @@ using Microsoft.Extensions.Configuration;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Mapping.ByCode;
 using NHibernate.Tool.hbm2ddl;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,10 @@ namespace nHL.Web.Infrastructure.Persistence
           where TDialect : Dialect
           where TDriver : IDriver
     {
+        public string AssemblyRootPath { get; set; }
+
+        public Action<Configuration, IEnumerable<Type>, IEnumerable<Type>> OnModelCreating { get; set; } = CreateExplicitHbmMapping;
+
         private readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
 
         public string ConnectionStringName { get; set; } = "DefaultConnection";
@@ -42,16 +48,29 @@ namespace nHL.Web.Infrastructure.Persistence
                 db.Driver<TDriver>();
                 db.BatchSize = 100;
             });
+            foreach (var assembly in AssemblyNames.Distinct())
+            {
+                _assemblies.Add(Assembly.LoadFrom(AssemblyRootPath != null ? Path.Combine(AssemblyRootPath, assembly) : assembly));
+            }
             foreach (var assembly in _assemblies)
             {
                 config.AddAssembly(assembly);
             }
-            foreach (var assembly in AssemblyNames.Distinct())
-            {
-                config.AddAssembly(assembly);
-            }
-
+            var assemblyTypes = _assemblies.SelectMany(q => q.GetTypes()).ToList();
+            var mappings = (from t in assemblyTypes
+                            where t.BaseType != null && t.BaseType.IsGenericType
+                            where typeof(IConformistHoldersProvider).IsAssignableFrom(t)
+                            select t).ToList();
+            OnModelCreating?.Invoke(config, mappings, assemblyTypes);
             return config;
+        }
+
+        private static void CreateExplicitHbmMapping(Configuration configuration, IEnumerable<Type> mappings, IEnumerable<Type> assemblyTypes)
+        {
+            var mapper = new ModelMapper();
+            mapper.AddMappings(mappings);
+            var hbm = mapper.CompileMappingForAllExplicitlyAddedEntities();
+            configuration.AddMapping(hbm);
         }
     }
 }

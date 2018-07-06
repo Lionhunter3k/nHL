@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\nHL.Domain\nHL.Domain.csproj" />
+    <ProjectReference Include="..\nHL.Persistence\nHL.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,6 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
+using NHibernate.Dialect;
+using NHibernate.Driver;
+using nHL.Domain;
+using nHL.Persistence;
 using nHL.Web.Helpers;
 using nHL.Web.Infrastructure;
 using nHL.Web.Infrastructure.Persistence;
@@ -33,7 +37,25 @@ namespace nHL.Web
             return services.AddAutofacProvider(builder =>
             {
                 //nhibernate
-                var nhibernateModule = new XmlNhibernateModule { SchemaRootPath = Environment.ContentRootPath, XmlCfgFileName = "hibernate.cfg.mssql.xml" };
+                var nhibernateModule = new LoquaciousNHibernateModule<MsSql2012Dialect, Sql2008ClientDriver>
+                {
+                    SchemaRootPath = Environment.ContentRootPath,
+                    OnModelCreating = (cfg, mappings, types) =>
+                    {
+                        var conventionBuilder = new ConventionBuilder
+                        {
+#if DEBUG
+                            OutputXmlMappingsFile = Path.Combine(Environment.ContentRootPath, "schema.hbm.xml"),
+                            ShowLogs = true,
+#endif
+                            AutoMappingOverride = (modelMapper) =>
+                            {
+                                modelMapper.AddMappings(mappings);
+                            }
+                        };
+                        conventionBuilder.ProcessConfiguration(cfg, types);
+                    }
+                }.AddAssemblyFor<User>();
                 builder.RegisterModule(nhibernateModule);
 
                 //services
