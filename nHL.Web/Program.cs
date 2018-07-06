@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.IO;
 
 namespace nHL.Web
 {
@@ -6,7 +9,18 @@ namespace nHL.Web
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var host = new WebHostBuilder()
+                 .UseKestrel()
+                 .UseContentRoot(Directory.GetCurrentDirectory())
+                 .ConfigureAppConfiguration((hostingContext, config) =>
+                 {
+                     config.AddEnvironmentVariables();
+                 })
+                 .UseDefaultServiceProvider((context, options) => options.ValidateScopes = context.HostingEnvironment.IsDevelopment())
+                 .UseStartup<Startup>()
+                 .UseUrls("http://localhost:5051")
+                 .Build();
+            host.Run();
         }
     }
 }
