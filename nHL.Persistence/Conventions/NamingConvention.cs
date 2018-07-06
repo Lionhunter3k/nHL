@@ -12,7 +12,7 @@ namespace nHL.Persistence.Conventions
 {
     public class NamingConvention : IAmConvention
     {
-        private IPluralizationApi service = new PluralizationApiBuilder().Build();
+        private IPluralizationApi service = new DummyPluralizationApi();
 
         public bool Pluralize { get; set; }
 
@@ -56,26 +56,29 @@ namespace nHL.Persistence.Conventions
         {
             if(Pluralize)
                 map.Table(service.Pluralize(type.Name));
-            map.Key(x =>
-            {
-                x.ForeignKey(IdFkConstraintNaming(type));
-                x.Column(IdColumnNaming(type));
-            });
+            if(IdFkConstraintNaming != null)
+                map.Key(x =>
+                {
+                    x.ForeignKey(IdFkConstraintNaming(type));
+                    if(IdColumnNaming != null)
+                        x.Column(IdColumnNaming(type));
+                });
         }
 
 
         private void ManyToManyConvention(IModelInspector modelInspector, PropertyPath member, IManyToManyMapper map)
         {
-            map.ForeignKey(
-                FkConstraintNaming(
-                       member.LocalMember,
-                       member.GetContainerEntity(modelInspector)));
+            if(FkConstraintNaming != null)
+                map.ForeignKey(
+                    FkConstraintNaming(
+                           member.LocalMember,
+                           member.GetContainerEntity(modelInspector)));
         }
 
         private void OneToManyConvention(IModelInspector modelInspector, PropertyPath member, ICollectionPropertiesMapper map)
         {
             var inv = GetInverseProperty(member.LocalMember);
-            if (inv == null)
+            if (inv == null && InverseFkColumnNaming != null)
             {
                 map.Key(x => x.Column(InverseFkColumnNaming(member.LocalMember,member.GetContainerEntity(modelInspector))));
             }
@@ -83,11 +86,13 @@ namespace nHL.Persistence.Conventions
 
         private void ReferenceConvention(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper map)
         {
-            map.Column(k => k.Name(FkColumnNaming(member.LocalMember)));
-            map.ForeignKey(
-                FkConstraintNaming(
-                       member.LocalMember,
-                       member.GetContainerEntity(modelInspector)));
+            if(FkColumnNaming != null)
+                map.Column(k => k.Name(FkColumnNaming(member.LocalMember)));
+            if(FkConstraintNaming != null)
+                map.ForeignKey(
+                    FkConstraintNaming(
+                           member.LocalMember,
+                           member.GetContainerEntity(modelInspector)));
         }
 
         private void PluralizeEntityName(IModelInspector modelInspector, Type type, IClassAttributesMapper map)
@@ -100,7 +105,8 @@ namespace nHL.Persistence.Conventions
         {
             map.Id(k =>
             {
-                k.Column(IdColumnNaming(type));
+                if(IdColumnNaming != null)
+                    k.Column(IdColumnNaming(type));
             });
         }
 

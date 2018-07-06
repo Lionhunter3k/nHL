@@ -10,9 +10,67 @@ using PluralizationService;
 
 namespace nHL.Persistence.Conventions
 {
+    public class DummyPluralizationApi : IPluralizationApi
+    {
+        public void AddWord(string singular, string plural)
+        {
+            //noop
+        }
+
+        public void AddWord(string singular, string plural, CultureInfo culture)
+        {
+            //noop
+        }
+
+        public void Dispose()
+        {
+            //noop
+        }
+
+        public bool IsPlural(string word)
+        {
+            return false;
+        }
+
+        public bool IsPlural(string word, CultureInfo culture)
+        {
+            return false;
+        }
+
+        public bool IsSingular(string word)
+        {
+            return false;
+        }
+
+        public bool IsSingular(string word, CultureInfo culture)
+        {
+            return false;
+        }
+
+        public string Pluralize(string word)
+        {
+            return word;
+        }
+
+        public string Pluralize(string word, CultureInfo culture)
+        {
+            return word;
+        }
+
+        public string Singularize(string word)
+        {
+            return word;
+        }
+
+        public string Singularize(string word, CultureInfo culture)
+        {
+            return word;
+        }
+    }
+
     public abstract class AbstractRelationConvention : IAmConvention
     {
-        protected IPluralizationApi service = new PluralizationApiBuilder().Build();
+        protected IPluralizationApi service = new DummyPluralizationApi();
 
         public IPluralizationApi Service
         {
@@ -28,7 +86,7 @@ namespace nHL.Persistence.Conventions
             }
         }
 
-        public Func<Type, bool> FilterType { get; set; }
+        public Func<Type, bool> FilterType { get; set; } = q => true;
 
         protected static bool isSelfReferencingObject(PropertyInfo property, PropertyInfo inverseProperty)
         {
@@ -57,7 +115,7 @@ namespace nHL.Persistence.Conventions
                     }
                     if (!FilterType(entity))
                         continue;
-                    if (!FilterType(propertyTypeToCheck))
+                    if (!FilterType(propertyTypeToCheck) || !entities.Contains(propertyTypeToCheck))
                         continue;
                     var inverseProperty = GetInverseProperty(property);//should return inverse property if conditions are met or return null otherwise
                     if ((inverseProperty != null && mappedItemsCache.Contains(inverseProperty.PropertyType.FullName + inverseProperty.Name + inverseProperty.DeclaringType.FullName)) || mappedItemsCache.Contains(property.PropertyType.FullName + property.Name + property.DeclaringType.FullName))

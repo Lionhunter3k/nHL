@@ -44,7 +44,7 @@ namespace nHL.Web.Infrastructure.Persistence
             var config = new Configuration().DataBaseIntegration(db =>
             {
                 db.Dialect<TDialect>();
-                db.ConnectionStringName = configuration.GetConnectionString(ConnectionStringName);
+                db.ConnectionString = configuration.GetConnectionString(ConnectionStringName);
                 db.Driver<TDriver>();
                 db.BatchSize = 100;
             });

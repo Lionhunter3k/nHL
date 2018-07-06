@@ -15,11 +15,14 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 using nHL.Domain;
 using nHL.Persistence;
+using nHL.Persistence.Conventions;
 using nHL.Web.Helpers;
 using nHL.Web.Infrastructure;
 using nHL.Web.Infrastructure.Persistence;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace nHL.Web
 {
@@ -50,10 +53,24 @@ namespace nHL.Web
 #endif
                             AutoMappingOverride = (modelMapper) =>
                             {
+                                modelMapper.Class<Culture>(m => m.Id(q => q.Name));
+                                modelMapper.Class<LocalizedStringResource>(m => m.Id(q => q.Key));
                                 modelMapper.AddMappings(mappings);
+                            },
+                            Conventions = new List<IAmConvention>{
+                                 new BidirectionalManyToManyRelationsConvention(),
+                                 new BidirectionalOneToManyConvention(),
+                                 new EnumConvention(),
+                                 new NamingConvention
+                                 {
+                                     InverseFkColumnNaming = null,
+                                     IdColumnNaming = null
+                                 },
+                                 new UnidirectionalManyToOne(),
+                                 new UnidirectionalOneToManyConvention()
                             }
                         };
-                        conventionBuilder.ProcessConfiguration(cfg, types);
+                        conventionBuilder.ProcessConfiguration(cfg, types.Where(q => q.IsEnum == false));
                     }
                 }.AddAssemblyFor<User>();
                 builder.RegisterModule(nhibernateModule);
@@ -157,6 +174,9 @@ namespace nHL.Web
 
         public void ConfigureApp(IApplicationBuilder app)
         {
+            var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value;
+            app.UseRequestLocalization(locOptions);
+
             var contentFileProvider = new PhysicalFileProvider(
                 Path.Combine(Environment.ContentRootPath, "Content"));
 
@@ -180,9 +200,6 @@ namespace nHL.Web
                 FileProvider = scriptsFileProvider,
                 RequestPath = "/Scripts"
             });
-
-            var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value;
-            app.UseRequestLocalization(locOptions);
 
             app.UseAuthentication();
 
