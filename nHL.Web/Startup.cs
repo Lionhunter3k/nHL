@@ -1,14 +1,19 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Autofac;
+using CoreMusicStore.Infrastructure;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 using nHL.Web.Helpers;
 using nHL.Web.Infrastructure;
+using nHL.Web.Infrastructure.Persistence;
 using System;
 using System.IO;
 
@@ -23,11 +28,27 @@ namespace nHL.Web
             Environment = env;
         }
 
+        public override IServiceProvider CreateServiceProvider(IServiceCollection services)
+        {
+            return services.AddAutofacProvider(builder =>
+            {
+                //nhibernate
+                var nhibernateModule = new XmlNhibernateModule { SchemaRootPath = Environment.ContentRootPath, XmlCfgFileName = "hibernate.cfg.mssql.xml" };
+                builder.RegisterModule(nhibernateModule);
+
+                //services
+                var servicesModule = new ServiceModule().AddAssemblyFor<Startup>();
+                builder.RegisterModule(servicesModule);
+            });
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             base.ConfigureServices(services);
 
             services.AddRouting();
+
+            services.AddNhibernateRequestLocalization();
 
             var mvcServiceBuilder = services
                 .AddMvcCore()
@@ -44,7 +65,11 @@ namespace nHL.Web
                 {
                     settings.ContractResolver = new DefaultContractResolver();
                 })
-                .AddAuthorization();//this also calls services.AddAuthorization()
+                .AddAuthorization()//this also calls services.AddAuthorization()
+                .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+                // Add support for localizing strings in data annotations (e.g. validation messages) via the
+                // IStringLocalizer abstractions.
+                .AddDataAnnotationsLocalization();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
               .AddCookie(options =>
@@ -133,6 +158,9 @@ namespace nHL.Web
                 FileProvider = scriptsFileProvider,
                 RequestPath = "/Scripts"
             });
+
+            var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value;
+            app.UseRequestLocalization(locOptions);
 
             app.UseAuthentication();
 
