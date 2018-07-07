@@ -27,6 +27,7 @@ namespace nHL.Web.Infrastructure
             {
                 var enabledCultures = new HashSet<string>(session.Query<Culture>().Where(q => q.Disabled == false).Select(q => q.Name));
                 var availableLocalCultures = CultureInfo.GetCultures(CultureTypes.AllCultures).Where(q => enabledCultures.Contains(q.Name)).ToArray();
+                //we should probably log that a certain machine doesn't have all the enabled cultures
                 options.SupportedCultures = availableLocalCultures;
                 options.SupportedUICultures = availableLocalCultures;
             }

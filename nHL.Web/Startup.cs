@@ -61,13 +61,9 @@ namespace nHL.Web
                                  new BidirectionalManyToManyRelationsConvention(),
                                  new BidirectionalOneToManyConvention(),
                                  new EnumConvention(),
-                                 new NamingConvention
-                                 {
-                                     InverseFkColumnNaming = null,
-                                     IdColumnNaming = null
-                                 },
                                  new UnidirectionalManyToOne(),
-                                 new UnidirectionalOneToManyConvention()
+                                 new UnidirectionalOneToManyConvention(),
+                                 new NamingConvention()
                             }
                         };
                         conventionBuilder.ProcessConfiguration(cfg, types.Where(q => q.IsEnum == false));

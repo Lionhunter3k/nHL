@@ -16,13 +16,13 @@ namespace nHL.Persistence.Conventions
 
         public bool Pluralize { get; set; }
 
-        public Func<Type, string> IdColumnNaming { get; set; } = t => "Id";
+        public Func<Type, MemberInfo, string> IdColumnNaming { get; set; } = (t, p) => p.Name;
 
         public Func<MemberInfo, Type, string> FkConstraintNaming { get; set; } = (p, c) => string.Format("fk_{0}_{1}", p.Name, c.Name);
 
-        public Func<MemberInfo, string> FkColumnNaming { get; set; } = (p) => p.GetPropertyOrFieldType().Name + "Id";
+        public Func<MemberInfo, MemberInfo, string> FkColumnNaming { get; set; } = (p, id) => p.GetPropertyOrFieldType().Name + id.Name;
 
-        public Func<MemberInfo, Type, string> InverseFkColumnNaming { get; set; } = (p, c) => c.Name + "Id";
+        public Func<MemberInfo, Type, MemberInfo, string> InverseFkColumnNaming { get; set; } = (p, c, id) => p.Name + id.Name;
 
         public Func<Type, string> IdFkConstraintNaming { get; set; } = c => string.Format("fk_{0}_{1}",
                                                 c.BaseType.Name,
@@ -32,15 +32,15 @@ namespace nHL.Persistence.Conventions
 
         public void ProcessMapper(NHibernate.Mapping.ByCode.ConventionModelMapper mapper, IEnumerable<Type> entities)
         {
-            mapper.BeforeMapClass += PluralizeEntityName;
-            mapper.BeforeMapClass += PrimaryKeyConvention;
-            mapper.BeforeMapManyToOne += ReferenceConvention;
-            mapper.BeforeMapSet += OneToManyConvention;
-            mapper.BeforeMapBag += OneToManyConvention;
-            mapper.BeforeMapList += OneToManyConvention;
-            mapper.BeforeMapManyToMany += ManyToManyConvention;
-            mapper.BeforeMapJoinedSubclass += MapJoinedSubclass;
-            mapper.BeforeMapProperty += ComponentNamingConvention;
+            mapper.AfterMapClass += PluralizeEntityName;
+            mapper.AfterMapClass += PrimaryKeyConvention;
+            mapper.AfterMapManyToOne += ReferenceConvention;
+            mapper.AfterMapSet += OneToManyConvention;
+            mapper.AfterMapBag += OneToManyConvention;
+            mapper.AfterMapList += OneToManyConvention;
+            mapper.AfterMapManyToMany += ManyToManyConvention;
+            mapper.AfterMapJoinedSubclass += MapJoinedSubclass;
+            mapper.AfterMapProperty += ComponentNamingConvention;
         }
 
         private void ComponentNamingConvention(IModelInspector modelInspector, PropertyPath member, IPropertyMapper map)
@@ -57,12 +57,15 @@ namespace nHL.Persistence.Conventions
             if(Pluralize)
                 map.Table(service.Pluralize(type.Name));
             if(IdFkConstraintNaming != null)
+            {
+                var idProperty = type.GetProperties().Where(modelInspector.IsPersistentId).Single();
                 map.Key(x =>
                 {
                     x.ForeignKey(IdFkConstraintNaming(type));
-                    if(IdColumnNaming != null)
-                        x.Column(IdColumnNaming(type));
+                    if (IdColumnNaming != null)
+                        x.Column(IdColumnNaming(type, idProperty));
                 });
+            }
         }
 
 
@@ -80,14 +83,19 @@ namespace nHL.Persistence.Conventions
             var inv = GetInverseProperty(member.LocalMember);
             if (inv == null && InverseFkColumnNaming != null)
             {
-                map.Key(x => x.Column(InverseFkColumnNaming(member.LocalMember,member.GetContainerEntity(modelInspector))));
+                var containerEntity = member.GetContainerEntity(modelInspector);
+                var idProperty = containerEntity.GetProperties().Where(modelInspector.IsPersistentId).Single();
+                map.Key(x => x.Column(InverseFkColumnNaming(member.LocalMember, containerEntity, idProperty)));
             }
         }
 
         private void ReferenceConvention(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper map)
         {
             if(FkColumnNaming != null)
-                map.Column(k => k.Name(FkColumnNaming(member.LocalMember)));
+            {
+                var idProperty = member.LocalMember.GetPropertyOrFieldType().GetProperties().Where(modelInspector.IsPersistentId).Single();
+                map.Column(k => k.Name(FkColumnNaming(member.LocalMember, idProperty)));
+            }
             if(FkConstraintNaming != null)
                 map.ForeignKey(
                     FkConstraintNaming(
@@ -105,8 +113,9 @@ namespace nHL.Persistence.Conventions
         {
             map.Id(k =>
             {
-                if(IdColumnNaming != null)
-                    k.Column(IdColumnNaming(type));
+                var idProperty = type.GetProperties().Where(modelInspector.IsPersistentId).Single();
+                if (IdColumnNaming != null)
+                    k.Column(IdColumnNaming(type, idProperty));
             });
         }
 

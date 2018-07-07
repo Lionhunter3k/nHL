@@ -11,6 +11,6 @@ namespace nHL.Domain
 
         public virtual string Name { get; set; }
 
-        public virtual string DefaultCultureName { get; set; }
+        public virtual Culture Culture { get; set; }
     }
 }

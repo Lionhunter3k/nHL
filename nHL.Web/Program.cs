@@ -14,7 +14,8 @@ namespace nHL.Web
                  .UseContentRoot(Directory.GetCurrentDirectory())
                  .ConfigureAppConfiguration((hostingContext, config) =>
                  {
-                     config.AddEnvironmentVariables();
+                     config.AddEnvironmentVariables()
+                           .AddJsonFile("appsettings.json");
                  })
                  .UseDefaultServiceProvider((context, options) => options.ValidateScopes = context.HostingEnvironment.IsDevelopment())
                  .UseStartup<Startup>()
