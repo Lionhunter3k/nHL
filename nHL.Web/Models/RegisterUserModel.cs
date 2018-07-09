@@ -1,4 +1,5 @@
-﻿using System;
+﻿using nHL.Web.Validators;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -34,7 +35,8 @@ namespace nHL.Web.Models
 
     public class AddressModel
     {
-        public int CountryId { get; set; }
+        [Required]
+        public int? CountryId { get; set; }
 
         [Required]
         [DataType(DataType.Text)]

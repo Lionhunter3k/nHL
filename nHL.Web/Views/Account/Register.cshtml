@@ -1,0 +1,77 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model RegisterUserModel
+@inject IViewLocalizer Localizer
+@{
+    ViewBag.Title = "Register";
+}
+<div asp-validation-summary="ModelOnly">
+    <span>@Localizer["Register Validation Summary"]</span>
+</div>
+<form method="post">
+    <table border="0" cellspacing="5px" class="register">
+        <tr>
+            <td align="justify" class="tableHeaderMessage" colspan="4">
+                @Localizer["Register Title"]
+            </td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                <hr />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.Username)
+            </td>
+            <td>
+                @Html.TextBoxFor(model => model.Username)
+                @Html.ValidationMessageFor(model => model.Username)
+            </td>
+            <td>
+                @Html.LabelFor(model => model.Password)
+            </td>
+            <td>
+                @Html.PasswordFor(model => model.Password)
+            </td>
+            <td>
+                @Html.ValidationMessageFor(model => model.Password)
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+                @Html.LabelFor(model => model.ConfirmPassword)
+            </td>
+            <td>
+                @Html.PasswordFor(model => model.ConfirmPassword)
+            </td>
+            <td>
+                @Html.ValidationMessageFor(model => model.ConfirmPassword)
+            </td>
+        </tr>
+        <tr>
+            <td>
+                @Html.LabelFor(model => model.Email)
+            </td>
+            <td>
+                @Html.EditorFor(model => model.Email)
+                @Html.ValidationMessageFor(model => model.Email)
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        @await Html.PartialAsync("_Address", Model.Address)
+        <tr>
+            <td colspan="4">
+                <hr />
+            </td>
+        </tr>
+        <tr>
+            <td align="center" colspan="4">
+                <input type="submit" name="Register" value="@Localizer["Register"]" class="submitButton" />
+            </td>
+        </tr>
+    </table>
+</form>

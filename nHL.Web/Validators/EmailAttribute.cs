@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace nHL.Web
+namespace nHL.Web.Validators
 {
     public class EmailAttribute : RegularExpressionAttribute
     {

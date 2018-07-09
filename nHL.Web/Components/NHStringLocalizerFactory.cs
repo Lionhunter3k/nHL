@@ -106,7 +106,7 @@ namespace nHL.Web.Components
                             persistedCulture = session.Value.Get<Culture>(culture.Key);
                         if (persistedCulture == null)
                             break;
-                        await session.Value.InsertAsync(new LocalizedStringResource { Culture = persistedCulture, Key = missingLocalizedString.Name, Resource = resource.Key, Text = missingLocalizedString.Value });
+                        await session.Value.InsertAsync(new LocalizedStringResource { Culture = persistedCulture, Key = missingLocalizedString.Name, Resource = resource.Key, Text = missingLocalizedString.Value, ResourceNotFound = true });
                     }
                 }
             }

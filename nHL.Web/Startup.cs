@@ -19,6 +19,7 @@ using nHL.Persistence.Conventions;
 using nHL.Web.Helpers;
 using nHL.Web.Infrastructure;
 using nHL.Web.Infrastructure.Persistence;
+using nHL.Web.Middlewares;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -54,7 +55,11 @@ namespace nHL.Web
                             AutoMappingOverride = (modelMapper) =>
                             {
                                 modelMapper.Class<Culture>(m => m.Id(q => q.Name));
-                                modelMapper.Class<LocalizedStringResource>(m => m.Id(q => q.Key));
+                                modelMapper.Class<LocalizedStringResource>(m => m.ComposedId(q =>
+                                {
+                                    q.Property(x => x.Resource);
+                                    q.Property(x => x.Key);
+                                }));
                                 modelMapper.AddMappings(mappings);
                             },
                             Conventions = new List<IAmConvention>{
@@ -67,8 +72,9 @@ namespace nHL.Web
                             }
                         };
                         conventionBuilder.ProcessConfiguration(cfg, types.Where(q => q.IsEnum == false));
-                    }
+                    },
                 }.AddAssemblyFor<User>();
+                nhibernateModule.SessionFactoryCreated += Seed.PopulateDatabase;
                 builder.RegisterModule(nhibernateModule);
 
                 //services
@@ -172,6 +178,7 @@ namespace nHL.Web
         {
             var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value;
             app.UseRequestLocalization(locOptions);
+            app.UseMiddleware<MissingStringLocalizerLoggerMiddleware>();
 
             var contentFileProvider = new PhysicalFileProvider(
                 Path.Combine(Environment.ContentRootPath, "Content"));

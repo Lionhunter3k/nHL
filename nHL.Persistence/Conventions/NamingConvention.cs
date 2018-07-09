@@ -58,13 +58,15 @@ namespace nHL.Persistence.Conventions
                 map.Table(service.Pluralize(type.Name));
             if(IdFkConstraintNaming != null)
             {
-                var idProperty = type.GetProperties().Where(modelInspector.IsPersistentId).Single();
-                map.Key(x =>
+                foreach(var idProperty in type.GetProperties().Where(modelInspector.IsPersistentId))
                 {
-                    x.ForeignKey(IdFkConstraintNaming(type));
-                    if (IdColumnNaming != null)
-                        x.Column(IdColumnNaming(type, idProperty));
-                });
+                    map.Key(x =>
+                    {
+                        x.ForeignKey(IdFkConstraintNaming(type));
+                        if (IdColumnNaming != null)
+                            x.Column(IdColumnNaming(type, idProperty));
+                    });
+                }
             }
         }
 
@@ -84,8 +86,10 @@ namespace nHL.Persistence.Conventions
             if (inv == null && InverseFkColumnNaming != null)
             {
                 var containerEntity = member.GetContainerEntity(modelInspector);
-                var idProperty = containerEntity.GetProperties().Where(modelInspector.IsPersistentId).Single();
-                map.Key(x => x.Column(InverseFkColumnNaming(member.LocalMember, containerEntity, idProperty)));
+                foreach(var idProperty in containerEntity.GetProperties().Where(modelInspector.IsPersistentId))
+                {
+                    map.Key(x => x.Column(InverseFkColumnNaming(member.LocalMember, containerEntity, idProperty)));
+                }
             }
         }
 
@@ -93,8 +97,10 @@ namespace nHL.Persistence.Conventions
         {
             if(FkColumnNaming != null)
             {
-                var idProperty = member.LocalMember.GetPropertyOrFieldType().GetProperties().Where(modelInspector.IsPersistentId).Single();
-                map.Column(k => k.Name(FkColumnNaming(member.LocalMember, idProperty)));
+                foreach(var idProperty in member.LocalMember.GetPropertyOrFieldType().GetProperties().Where(modelInspector.IsPersistentId))
+                {
+                    map.Column(k => k.Name(FkColumnNaming(member.LocalMember, idProperty)));
+                }
             }
             if(FkConstraintNaming != null)
                 map.ForeignKey(
@@ -113,9 +119,11 @@ namespace nHL.Persistence.Conventions
         {
             map.Id(k =>
             {
-                var idProperty = type.GetProperties().Where(modelInspector.IsPersistentId).Single();
-                if (IdColumnNaming != null)
-                    k.Column(IdColumnNaming(type, idProperty));
+                foreach(var idProperty in type.GetProperties().Where(modelInspector.IsPersistentId))
+                {
+                    if (IdColumnNaming != null)
+                        k.Column(IdColumnNaming(type, idProperty));
+                }
             });
         }
 

@@ -33,13 +33,16 @@
             <label>@Localizer["Copyright © 2013 - Raul ILOC & Dodu Cosmin"]</label>
         </div>
     </div>
+    @{
+        var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}";
+    }
     <script type="text/javascript">
         var paramObject = {
             UrlChangeCulture: '@Url.Content("~/Account/ChangeCurrentCulture")'
         }
 
         function changeCurrentCulture(culture) {
-            document.location = paramObject.UrlChangeCulture + "?culture=" + culture;
+            document.location = paramObject.UrlChangeCulture + "?culture=" + culture + "returnUrl=" + @returnUrl;
             return true;
         }
     </script>

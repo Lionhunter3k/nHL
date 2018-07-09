@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using NHibernate;
 using NHibernate.Linq;
@@ -12,6 +15,7 @@ using nHL.Web.Models;
 using nHL.Web.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +25,7 @@ namespace nHL.Web.Controllers
     [TypeFilter(typeof(NHibernateSession<StatefulSessionWrapper>))]
     public class AccountController : Controller
     {
-        private readonly ISession session;
+        private readonly NHibernate.ISession session;
         private readonly IAsyncStringLocalizer<AccountController> localizer;
         private readonly IAuthenticationService authenticationService;
 
@@ -30,7 +34,7 @@ namespace nHL.Web.Controllers
         //public ViewDataDictionary ViewData { get; set; }
         //public IUrlHelper Url { get; set; }
 
-        public AccountController(ISession session, IAsyncStringLocalizer<AccountController> localizer, IAuthenticationService authenticationService)
+        public AccountController(NHibernate.ISession session, IAsyncStringLocalizer<AccountController> localizer, IAuthenticationService authenticationService)
         {
             this.session = session;
             this.localizer = localizer;
@@ -85,9 +89,17 @@ namespace nHL.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
-            return View(new RegisterUserModel());
+            var model = new RegisterUserModel();
+            await PrepareModel(model);
+            return View(model);
+        }
+
+        private async Task PrepareModel(RegisterUserModel model)
+        {
+            var availableCountries = await session.Query<Country>().ToListAsync();
+            this.ViewBag.AvailableCountries = availableCountries.Select(q => new SelectListItem { Text = q.Name, Value = q.Id.ToString(), Selected = model.Address?.CountryId == q.Id }).ToList();
         }
 
         [HttpPost]
@@ -137,11 +149,20 @@ namespace nHL.Web.Controllers
                     //
                     var localizedMessages = await localizer.GetLocalizedStringsAsync();
                     ModelState.AddModelError("", localizedMessages["RegisterInvalidUsername"]);
-                    //
-                    return View(model);
                 }
             }
+            await PrepareModel(model);
             return View(model);
+        }
+
+        public ActionResult ChangeCurrentCulture(string culture, string returnUrl)
+        {
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
+            );
+            return LocalRedirect(returnUrl);
         }
     }
 }

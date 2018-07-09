@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model LogOnModel
+@inject IViewLocalizer Localizer
+
+@{
+    ViewBag.Title = Localizer["Log On"];
+}
+
+<h2>@Localizer["Log On Title"]</h2>
+<p>
+    @Localizer["Log On Message"] <a asp-action="Register" asp-controller="Account">@Localizer["Log On Register Link"]</a> @Localizer["Log On Message 2"]
+</p>
+<div asp-validation-summary="ModelOnly">
+    <span>@Localizer["Log On Validation Summary"]</span>
+</div>
+<form method="post">
+    <div>
+        <fieldset>
+            <legend>@Localizer["Log On Legend"]</legend>
+
+            <div class="editor-label">
+                @Html.LabelFor(m => m.Username)
+            </div>
+            <div class="editor-field">
+                @Html.TextBoxFor(m => m.Username)
+                @Html.ValidationMessageFor(m => m.Username)
+            </div>
+            <div class="editor-label">
+                @Html.LabelFor(m => m.Password)
+            </div>
+            <div class="editor-field">
+                @Html.PasswordFor(m => m.Password)
+                @Html.ValidationMessageFor(m => m.Password)
+            </div>
+            <p>
+                <input type="submit" value="@Localizer["LogOnLoginButton"]" />
+            </p>
+        </fieldset>
+    </div>
+</form>
