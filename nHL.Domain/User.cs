@@ -20,7 +20,7 @@ namespace nHL.Domain
 
         public virtual string Email { get; set; }
 
-        public virtual UserRoles Role { get; set; }
+        public virtual UserRoles UserRole { get; set; }
 
         public virtual Address Address { get; set; }
     }

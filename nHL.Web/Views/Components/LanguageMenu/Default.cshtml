@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Options
+
+@model CultureHtmlModel
+@inject IViewLocalizer Localizer
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+}
+<table width="100%" border="0" cellpadding="0" cellspacing="0" class="header-table">
+    <tr>
+        <td colspan="2">
+            <div id="logindisplay">
+                @if (Model.Username != null)
+                {
+                    <text>@Localizer["Welcome"] <strong>@Model.Username</strong>! [<a asp-action="LogOff" asp-controller="Account">@Localizer["Log out"]</a>]</text>
+                }
+                else
+                {
+                    <a asp-action="LogOn" asp-controller="Account">@Localizer["Log in"]</a>
+                }
+            </div>
+        </td>
+        <td style="width: 100px;">
+            <select class="currentCulture" name="selectCulture" id="_cultureDDL" onchange="changeCurrentCulture(this.value)">
+                @foreach (var culture in Model.AvailableCultures)
+                {
+                    <option value="@culture.Name" @(culture.Name == requestCulture.RequestCulture.UICulture.Name ? "selected" : string.Empty) title="@Url.Content("~/Content/Images/" + culture.FlagFilename)">@culture.DisplayName</option>
+                }
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td id="headerLeftImage">
+            <img id="_leftImage" runat="server" src="@Url.Content("~/Content/Images/HeaderLogo.png")" />
+        </td>
+        <td>
+            <div class="headerTitle">
+                &nbsp;
+                @Localizer["Stuff for the header"]
+            </div>
+        </td>
+    </tr>
+</table>

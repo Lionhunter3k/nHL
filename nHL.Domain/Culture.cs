@@ -8,6 +8,10 @@ namespace nHL.Domain
     {
         public virtual string Name { get; set; }
 
+        public virtual string DisplayName { get; set; }
+
         public virtual bool Disabled { get; set; }
+
+        public virtual string FlagFilename { get; set; }
     }
 }

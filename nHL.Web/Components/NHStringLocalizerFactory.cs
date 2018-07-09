@@ -99,13 +99,14 @@ namespace nHL.Web.Components
             {
                 foreach(var culture in resource.Value.LocalizedStrings)
                 {
-                    var persistedCulture = session.Value.Get<Culture>(culture.Key);
-                    if(persistedCulture != null)
+                    Culture persistedCulture = null;
+                    foreach (var missingLocalizedString in culture.Value.Values.Where(q => q.ResourceNotFound))
                     {
-                        foreach (var missingLocalizedString in culture.Value.Values.Where(q => q.ResourceNotFound))
-                        {
-                            await session.Value.InsertAsync(new LocalizedStringResource { Culture = persistedCulture, Key = missingLocalizedString.Name, Resource = resource.Key, Text = missingLocalizedString.Value });
-                        }
+                        if (persistedCulture == null)
+                            persistedCulture = session.Value.Get<Culture>(culture.Key);
+                        if (persistedCulture == null)
+                            break;
+                        await session.Value.InsertAsync(new LocalizedStringResource { Culture = persistedCulture, Key = missingLocalizedString.Name, Resource = resource.Key, Text = missingLocalizedString.Value });
                     }
                 }
             }

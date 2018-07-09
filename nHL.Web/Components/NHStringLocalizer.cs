@@ -97,7 +97,7 @@ namespace nHL.Web.Components
 
         IEnumerable<string> IReadOnlyDictionary<string, GetOrFormatLocalizedString>.Keys => LocalizedStrings[culture].Keys;
 
-        IEnumerable<GetOrFormatLocalizedString> IReadOnlyDictionary<string, GetOrFormatLocalizedString>.Values => LocalizedStrings[culture].Values.Select(q => new GetOrFormatLocalizedString(q.Value, Format));
+        IEnumerable<GetOrFormatLocalizedString> IReadOnlyDictionary<string, GetOrFormatLocalizedString>.Values => LocalizedStrings[culture].Values.Select(q => new GetOrFormatLocalizedString(q, Format));
 
         int IReadOnlyCollection<KeyValuePair<string, GetOrFormatLocalizedString>>.Count => LocalizedStrings[culture].Count;
 
@@ -111,7 +111,7 @@ namespace nHL.Web.Components
                 }
                 var notFoundResource = new LocalizedString(key, key, true, resource);
                 localizedStringsForCurrentCulture.Add(key, notFoundResource);
-                value = new GetOrFormatLocalizedString(key, Format);
+                value = new GetOrFormatLocalizedString(notFoundResource, Format);
                 return value;
             }
         }
@@ -147,7 +147,7 @@ namespace nHL.Web.Components
             localizedStringsForCurrentCulture = LocalizedStrings[culture];
             if (localizedStringsForCurrentCulture.TryGetValue(key, out var localizedString))
             {
-                value = new GetOrFormatLocalizedString(localizedString.Value, Format);
+                value = new GetOrFormatLocalizedString(localizedString, Format);
                 return true;
             }
             else

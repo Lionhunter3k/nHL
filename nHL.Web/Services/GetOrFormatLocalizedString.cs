@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Localization;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -9,9 +10,9 @@ namespace nHL.Web.Services
     {
         private readonly Func<string, object[], string> formatter;
 
-        public GetOrFormatLocalizedString(string value, Func<string, object[], string> formatter) : this()
+        public GetOrFormatLocalizedString(LocalizedString localizedString, Func<string, object[], string> formatter) : this()
         {
-            Value = value;
+            LocalizedString = localizedString;
             this.formatter = formatter;
         }
 
@@ -23,146 +24,151 @@ namespace nHL.Web.Services
             }
         }
 
-        public string Value { get; }
+        public LocalizedString LocalizedString { get; }
 
         public object Clone()
         {
-            return Value.Clone();
+            return LocalizedString.Value.Clone();
         }
 
         public int CompareTo(object obj)
         {
-            return Value.CompareTo(obj);
+            return LocalizedString.Value.CompareTo(obj);
         }
 
         public int CompareTo(string other)
         {
-            return Value.CompareTo(other);
+            return LocalizedString.Value.CompareTo(other);
         }
 
         public bool Equals(string other)
         {
-            return Value.Equals(other);
+            return LocalizedString.Value.Equals(other);
         }
 
         public override bool Equals(object obj)
         {
-            return Value.Equals(obj);
+            return LocalizedString.Value.Equals(obj);
         }
 
         public string Format(params object[] args)
         {
-            return formatter(Value, args);
+            return formatter(LocalizedString, args);
         }
 
         public IEnumerator<char> GetEnumerator()
         {
-            return ((IEnumerable<char>)Value).GetEnumerator();
+            return ((IEnumerable<char>)LocalizedString.Value).GetEnumerator();
         }
 
         public override int GetHashCode()
         {
-            return Value.GetHashCode();
+            return LocalizedString.Value.GetHashCode();
         }
 
         public TypeCode GetTypeCode()
         {
-            return Value.GetTypeCode();
+            return LocalizedString.Value.GetTypeCode();
         }
 
         public bool ToBoolean(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToBoolean(provider);
+            return ((IConvertible)LocalizedString.Value).ToBoolean(provider);
         }
 
         public byte ToByte(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToByte(provider);
+            return ((IConvertible)LocalizedString.Value).ToByte(provider);
         }
 
         public char ToChar(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToChar(provider);
+            return ((IConvertible)LocalizedString.Value).ToChar(provider);
         }
 
         public DateTime ToDateTime(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToDateTime(provider);
+            return ((IConvertible)LocalizedString.Value).ToDateTime(provider);
         }
 
         public decimal ToDecimal(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToDecimal(provider);
+            return ((IConvertible)LocalizedString.Value).ToDecimal(provider);
         }
 
         public double ToDouble(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToDouble(provider);
+            return ((IConvertible)LocalizedString.Value).ToDouble(provider);
         }
 
         public short ToInt16(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToInt16(provider);
+            return ((IConvertible)LocalizedString.Value).ToInt16(provider);
         }
 
         public int ToInt32(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToInt32(provider);
+            return ((IConvertible)LocalizedString.Value).ToInt32(provider);
         }
 
         public long ToInt64(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToInt64(provider);
+            return ((IConvertible)LocalizedString.Value).ToInt64(provider);
         }
 
         public sbyte ToSByte(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToSByte(provider);
+            return ((IConvertible)LocalizedString.Value).ToSByte(provider);
         }
 
         public float ToSingle(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToSingle(provider);
+            return ((IConvertible)LocalizedString.Value).ToSingle(provider);
         }
 
         public string ToString(IFormatProvider provider)
         {
-            return Value.ToString(provider);
+            return LocalizedString.Value.ToString(provider);
         }
 
         public override string ToString()
         {
-            return Value;
+            return LocalizedString.Value;
         }
 
         public object ToType(Type conversionType, IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToType(conversionType, provider);
+            return ((IConvertible)LocalizedString.Value).ToType(conversionType, provider);
         }
 
         public ushort ToUInt16(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToUInt16(provider);
+            return ((IConvertible)LocalizedString.Value).ToUInt16(provider);
         }
 
         public uint ToUInt32(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToUInt32(provider);
+            return ((IConvertible)LocalizedString.Value).ToUInt32(provider);
         }
 
         public ulong ToUInt64(IFormatProvider provider)
         {
-            return ((IConvertible)Value).ToUInt64(provider);
+            return ((IConvertible)LocalizedString.Value).ToUInt64(provider);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable<char>)Value).GetEnumerator();
+            return ((IEnumerable<char>)LocalizedString.Value).GetEnumerator();
         }
 
         public static implicit operator string(GetOrFormatLocalizedString localizedString)
         {
-            return localizedString.Value;
+            return localizedString.LocalizedString;
+        }
+
+        public static implicit operator LocalizedString(GetOrFormatLocalizedString localizedString)
+        {
+            return localizedString;
         }
     }
 }
