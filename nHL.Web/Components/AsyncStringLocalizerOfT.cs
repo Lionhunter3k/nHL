@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace nHL.Web.Components
 {
-    public class NHAsyncStringLocalizer<T> : IAsyncStringLocalizer<T>
+    public class AsyncStringLocalizer<T> : IAsyncStringLocalizer<T>
     {
         private readonly IAsyncStringLocalizer localizer;
 
-        public NHAsyncStringLocalizer(IAsyncLocalizerFactory asyncLocalizerFactory)
+        public AsyncStringLocalizer(IAsyncLocalizerFactory asyncLocalizerFactory)
         {
             this.localizer = asyncLocalizerFactory.Create(typeof(T));
         }

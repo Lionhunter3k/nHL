@@ -15,12 +15,13 @@ namespace nHL.Web.Infrastructure
     {
         public static IServiceCollection AddNhibernateRequestLocalization(this IServiceCollection services)
         {
-            services.AddLocalization();
-            services.Add(ServiceDescriptor.Scoped<NHStringLocalizerFactory, NHStringLocalizerFactory>());
-            services.Add(ServiceDescriptor.Scoped<IMissingStringLocalizerLogger, NHStringLocalizerFactory>(q => q.GetRequiredService<NHStringLocalizerFactory>()));
-            services.Add(ServiceDescriptor.Scoped<IAsyncLocalizerFactory, NHStringLocalizerFactory>(q => q.GetRequiredService<NHStringLocalizerFactory>()));
-            services.Replace(ServiceDescriptor.Scoped<IStringLocalizerFactory, NHStringLocalizerFactory>(q => q.GetRequiredService<NHStringLocalizerFactory>()));
-            services.TryAddTransient(typeof(IAsyncStringLocalizer<>), typeof(NHAsyncStringLocalizer<>));
+            services.Add(ServiceDescriptor.Singleton<NHStringLocalizerFactory, NHStringLocalizerFactory>());
+            services.Add(ServiceDescriptor.Singleton<MissingStringLocalizerFactory, MissingStringLocalizerFactory>(q => new MissingStringLocalizerFactory(q.GetRequiredService<NHStringLocalizerFactory>(), q.GetRequiredService<NHStringLocalizerFactory>(), q.GetRequiredService<IMissingStringLocalizerLogger>())));
+            services.Add(ServiceDescriptor.Singleton<IAsyncLocalizerFactory, MissingStringLocalizerFactory>(q => q.GetRequiredService<MissingStringLocalizerFactory>()));
+            services.Add(ServiceDescriptor.Singleton<IStringLocalizerFactory, MissingStringLocalizerFactory>(q => q.GetRequiredService<MissingStringLocalizerFactory>()));
+            services.Add(ServiceDescriptor.Singleton<IMissingStringLocalizerLogger, NHMissingStringLocalizerLogger>());
+            services.AddScoped(typeof(IAsyncStringLocalizer<>), typeof(AsyncStringLocalizer<>));
+            services.AddScoped(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
             //should I use TryAddEnumerable?
             services.Add(ServiceDescriptor.Singleton<IConfigureOptions<RequestLocalizationOptions>, NHRequestLocalizationConfiguration>());
             return services;

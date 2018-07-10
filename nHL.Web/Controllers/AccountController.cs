@@ -56,7 +56,7 @@ namespace nHL.Web.Controllers
                 if (user == null)
                 {
                     var localizedMessages = await localizer.GetLocalizedStringsAsync();
-                    ModelState.AddModelError("", localizedMessages["LogOnErrorMessage"]);
+                    ModelState.AddModelError("", localizedMessages["No user found with this username or the password is incorrect"]);
                     //
                     return View(model);
                 }
@@ -148,7 +148,7 @@ namespace nHL.Web.Controllers
                     // Exists other user with the same username, so show the error message.
                     //
                     var localizedMessages = await localizer.GetLocalizedStringsAsync();
-                    ModelState.AddModelError("", localizedMessages["RegisterInvalidUsername"]);
+                    ModelState.AddModelError("", localizedMessages["The username is already taken"]);
                 }
             }
             await PrepareModel(model);
@@ -162,7 +162,9 @@ namespace nHL.Web.Controllers
                 CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
                 new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) }
             );
-            return LocalRedirect(returnUrl);
+            if(!string.IsNullOrEmpty(returnUrl))
+                return LocalRedirect(returnUrl);
+            return RedirectToAction("Index", "Home");
         }
     }
 }

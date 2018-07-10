@@ -2,7 +2,7 @@
 @model RegisterUserModel
 @inject IViewLocalizer Localizer
 @{
-    ViewBag.Title = "Register";
+    ViewBag.Title = Localizer["Register"].Value;
 }
 <div asp-validation-summary="ModelOnly">
     <span>@Localizer["Register Validation Summary"]</span>

@@ -3,16 +3,20 @@ using CoreMusicStore.Infrastructure;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
+using Microsoft.AspNetCore.Razor.Hosting;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Mapping.ByCode;
 using nHL.Domain;
 using nHL.Persistence;
 using nHL.Persistence.Conventions;
@@ -54,7 +58,14 @@ namespace nHL.Web
 #endif
                             AutoMappingOverride = (modelMapper) =>
                             {
-                                modelMapper.Class<Culture>(m => m.Id(q => q.Name));
+                                modelMapper.BeforeMapClass += (modelInspector, type, map) =>
+                                {
+                                    map.Id(k =>
+                                    {
+                                        k.Generator(Generators.Native);
+                                    });
+                                };
+                                modelMapper.Class<Culture>(m => m.Id(q => q.Name, o => o.Generator(Generators.Assigned)));
                                 modelMapper.Class<LocalizedStringResource>(m => m.ComposedId(q =>
                                 {
                                     q.Property(x => x.Resource);
@@ -98,7 +109,10 @@ namespace nHL.Web
                 .AddViews()
                 .AddRazorViewEngine(options =>
                 {
-                    options.AddReferencesFromRuntimeContext();
+                    options.AdditionalCompilationReferences.AddReferencesFromRuntimeContext()
+                                                           .AddReferencesFromAssemblyOf<RazorSourceChecksumAttribute>()
+                                                           .AddReferencesFromAssemblyOf<TagHelperAttribute>()
+                                                           .AddReferencesFromAssemblyOf<HtmlString>();
                 })
                 .AddDataAnnotations()
                 .AddFormatterMappings()
@@ -178,7 +192,6 @@ namespace nHL.Web
         {
             var locOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>().Value;
             app.UseRequestLocalization(locOptions);
-            app.UseMiddleware<MissingStringLocalizerLoggerMiddleware>();
 
             var contentFileProvider = new PhysicalFileProvider(
                 Path.Combine(Environment.ContentRootPath, "Content"));
@@ -203,6 +216,8 @@ namespace nHL.Web
                 FileProvider = scriptsFileProvider,
                 RequestPath = "/Scripts"
             });
+
+            app.UseMiddleware<MissingStringLocalizerLoggerMiddleware>();
 
             app.UseAuthentication();
 

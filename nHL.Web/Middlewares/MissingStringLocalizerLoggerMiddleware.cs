@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace nHL.Web.Middlewares
 {
-    public class MissingStringLocalizerLoggerMiddleware : IMiddleware
+    public class MissingStringLocalizerLoggerMiddleware
     {
-        private readonly IMissingStringLocalizerLogger missingStringLocalizerLogger;
+        private readonly RequestDelegate next;
 
-        public MissingStringLocalizerLoggerMiddleware(IMissingStringLocalizerLogger missingStringLocalizerLogger)
+        public MissingStringLocalizerLoggerMiddleware(RequestDelegate next)
         {
-            this.missingStringLocalizerLogger = missingStringLocalizerLogger;
+            this.next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context, IMissingStringLocalizerLogger missingStringLocalizerLogger)
         {
             await next(context);
             await missingStringLocalizerLogger.FlushMissingStringsAsync();

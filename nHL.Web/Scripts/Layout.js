@@ -1,13 +1,13 @@
-﻿$(document).ready(function (e) 
+﻿$(document).ready(function (e)
 {
     //
-    // Try to init the culture drop down list. 
+    // Try to init the culture drop down list.
     //
-    try 
+    try
     {
         $("#_cultureDDL").msDropDown();
     }
-    catch (e) 
+    catch (e)
     {
         alert(e.message);
     }

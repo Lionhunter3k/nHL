@@ -39,11 +39,13 @@ namespace nHL.Web.Components
 
         public NHStringLocalizer(Func<string, CultureInfo, TStringDictionary> localizedStringsRetriever,
             Func<string, CultureInfo, Task<TStringDictionary>> asyncLocalizedStringsRetriever,
-            string resource)
+            string resource,
+            TCultureDictionary localizedStrings)
         {
             this.localizedStringsRetriever = localizedStringsRetriever;
             this.asyncLocalizedStringsRetriever = asyncLocalizedStringsRetriever;
             this.resource = resource;
+            this.LocalizedStrings = localizedStrings;
         }
 
         private TStringDictionary RetrieveLocalizedStrings()

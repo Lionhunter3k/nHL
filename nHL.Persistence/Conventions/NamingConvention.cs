@@ -18,13 +18,13 @@ namespace nHL.Persistence.Conventions
 
         public Func<Type, MemberInfo, string> IdColumnNaming { get; set; } = (t, p) => p.Name;
 
-        public Func<MemberInfo, Type, string> FkConstraintNaming { get; set; } = (p, c) => string.Format("fk_{0}_{1}", p.Name, c.Name);
+        public Func<MemberInfo, Type, string> FkConstraintNaming { get; set; } = (p, c) => string.Format("FK_{0}_{1}", p.Name, c.Name);
 
         public Func<MemberInfo, MemberInfo, string> FkColumnNaming { get; set; } = (p, id) => p.GetPropertyOrFieldType().Name + id.Name;
 
         public Func<MemberInfo, Type, MemberInfo, string> InverseFkColumnNaming { get; set; } = (p, c, id) => p.Name + id.Name;
 
-        public Func<Type, string> IdFkConstraintNaming { get; set; } = c => string.Format("fk_{0}_{1}",
+        public Func<Type, string> IdFkConstraintNaming { get; set; } = c => string.Format("FK_{0}_{1}",
                                                 c.BaseType.Name,
                                                 c.Name);
 
@@ -32,7 +32,7 @@ namespace nHL.Persistence.Conventions
 
         public void ProcessMapper(NHibernate.Mapping.ByCode.ConventionModelMapper mapper, IEnumerable<Type> entities)
         {
-            mapper.AfterMapClass += PluralizeEntityName;
+            mapper.AfterMapClass += EscapeAndMaybePluralizeEntityName;
             mapper.AfterMapClass += PrimaryKeyConvention;
             mapper.AfterMapManyToOne += ReferenceConvention;
             mapper.AfterMapSet += OneToManyConvention;
@@ -41,6 +41,13 @@ namespace nHL.Persistence.Conventions
             mapper.AfterMapManyToMany += ManyToManyConvention;
             mapper.AfterMapJoinedSubclass += MapJoinedSubclass;
             mapper.AfterMapProperty += ComponentNamingConvention;
+            mapper.AfterMapProperty += EscapeColumnName;
+        }
+
+        private void EscapeColumnName(IModelInspector modelInspector, PropertyPath member, IPropertyMapper propertyCustomizer)
+        {
+            var columnName = member.ToColumnName();
+            propertyCustomizer.Column("`" + columnName + "`");
         }
 
         private void ComponentNamingConvention(IModelInspector modelInspector, PropertyPath member, IPropertyMapper map)
@@ -109,10 +116,12 @@ namespace nHL.Persistence.Conventions
                            member.GetContainerEntity(modelInspector)));
         }
 
-        private void PluralizeEntityName(IModelInspector modelInspector, Type type, IClassAttributesMapper map)
+        private void EscapeAndMaybePluralizeEntityName(IModelInspector modelInspector, Type type, IClassAttributesMapper map)
         {
             if (Pluralize)
-                map.Table(service.Pluralize(type.Name));
+                map.Table("`" + service.Pluralize(type.Name) + "`");
+            else
+              map.Table("`" + type.Name + "`");
         }
 
         private void PrimaryKeyConvention(IModelInspector modelInspector, Type type, IClassAttributesMapper map)

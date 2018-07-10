@@ -23,7 +23,7 @@ namespace nHL.Web.Infrastructure.Persistence
     {
         public string AssemblyRootPath { get; set; }
 
-        public Action<Configuration, IEnumerable<Type>, IEnumerable<Type>> OnModelCreating { get; set; } = CreateExplicitHbmMapping;
+        public Action<Configuration, IReadOnlyCollection<Type>, IReadOnlyCollection<Type>> OnModelCreating { get; set; } = CreateExplicitHbmMapping;
 
         private readonly HashSet<Assembly> _assemblies = new HashSet<Assembly>();
 
@@ -65,12 +65,15 @@ namespace nHL.Web.Infrastructure.Persistence
             return config;
         }
 
-        private static void CreateExplicitHbmMapping(Configuration configuration, IEnumerable<Type> mappings, IEnumerable<Type> assemblyTypes)
+        private static void CreateExplicitHbmMapping(Configuration configuration, IReadOnlyCollection<Type> mappings, IReadOnlyCollection<Type> assemblyTypes)
         {
-            var mapper = new ModelMapper();
-            mapper.AddMappings(mappings);
-            var hbm = mapper.CompileMappingForAllExplicitlyAddedEntities();
-            configuration.AddMapping(hbm);
+            if(mappings.Count > 0)
+            {
+                var mapper = new ModelMapper();
+                mapper.AddMappings(mappings);
+                var hbm = mapper.CompileMappingForAllExplicitlyAddedEntities();
+                configuration.AddMapping(hbm);
+            }
         }
     }
 }

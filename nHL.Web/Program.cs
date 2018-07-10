@@ -19,7 +19,7 @@ namespace nHL.Web
                  })
                  .UseDefaultServiceProvider((context, options) => options.ValidateScopes = context.HostingEnvironment.IsDevelopment())
                  .UseStartup<Startup>()
-                 .UseUrls("http://localhost:5051")
+                 .UseUrls("http://localhost:5052")
                  .Build();
             host.Run();
         }

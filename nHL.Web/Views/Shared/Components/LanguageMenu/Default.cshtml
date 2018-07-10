@@ -24,10 +24,10 @@
             </div>
         </td>
         <td style="width: 100px;">
-            <select class="currentCulture" name="selectCulture" id="_cultureDDL" onchange="changeCurrentCulture(this.value)">
+            <select style="width:100px;" onchange="changeCurrentCulture(this.value)" value="@requestCulture.RequestCulture.UICulture.Name">
                 @foreach (var culture in Model.AvailableCultures)
                 {
-                    <option value="@culture.Name" @(culture.Name == requestCulture.RequestCulture.UICulture.Name ? "selected" : string.Empty) title="@Url.Content("~/Content/Images/" + culture.FlagFilename)">@culture.DisplayName</option>
+                    <option value="@culture.Name" @(culture.Name == requestCulture.RequestCulture.UICulture.Name ? "selected" : string.Empty) data-image="@Url.Content("~/Content/Images/" + culture.FlagFilename)">@culture.DisplayName</option>
                 }
             </select>
         </td>

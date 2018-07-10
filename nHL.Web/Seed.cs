@@ -25,8 +25,8 @@ namespace nHL.Web
                 var RomaniaCountry = new Country { Culture = roCulture, Name = "Romania" };
                 var GermanyCountry = new Country { Culture = deCulture, Name = "Germany" };
                 session.Save(USACountry);
-                session.Save(roCulture);
-                session.Save(deCulture);
+                session.Save(RomaniaCountry);
+                session.Save(GermanyCountry);
                 tx.Commit();
             }
         }

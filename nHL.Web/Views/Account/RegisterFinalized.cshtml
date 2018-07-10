@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
-    ViewBag.Title = "RegisterFinalized";
+    ViewBag.Title = Localizer["Register Finalized"].Value;
 }
 <h1 class="actionFinalized">@Localizer["Thanks for registering!"]</h1>
 <br />

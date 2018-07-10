@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 @{
-    ViewBag.Title = Localizer["Home Page"];
+    ViewBag.Title = Localizer["Home Page"].Value;
 }
 <h2>@Localizer["Index Title"]</h2>
 

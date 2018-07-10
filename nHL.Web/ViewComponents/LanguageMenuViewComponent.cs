@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using NHibernate;
 using NHibernate.Linq;
 using nHL.Domain;

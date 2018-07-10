@@ -96,7 +96,7 @@ namespace nHL.Web.Infrastructure
             options.AdditionalCompilationReferences.AddReferencesFromRuntimeContext();
         }
 
-        public static void AddReferencesFromRuntimeContext(this ICollection<MetadataReference> references)
+        public static ICollection<MetadataReference> AddReferencesFromRuntimeContext(this ICollection<MetadataReference> references)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
             assemblies.Add(typeof(Microsoft.CSharp.RuntimeBinder.Binder).Assembly);
@@ -108,6 +108,7 @@ namespace nHL.Web.Infrastructure
             {
                 references.Add(portableExecutableReference);
             }
+            return references;
         }
 
         public static void AddReferencesFromAssemblyOf<TObject>(this RazorViewEngineOptions options)
