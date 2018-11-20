@@ -85,7 +85,7 @@ namespace nHL.Web
                         conventionBuilder.ProcessConfiguration(cfg, types.Where(q => q.IsEnum == false));
                     },
                 }.AddAssemblyFor<User>();
-                nhibernateModule.SessionFactoryCreated += Seed.PopulateDatabase;
+                nhibernateModule.OnSessionFactoryCreated += Seed.PopulateDatabase;
                 builder.RegisterModule(nhibernateModule);
 
                 //services

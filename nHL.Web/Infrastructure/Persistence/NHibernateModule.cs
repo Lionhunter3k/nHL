@@ -21,13 +21,16 @@ namespace nHL.Web.Infrastructure.Persistence
 
         public string SchemaFilename { get; set; } = "db.sql";
 
-        public event EventHandler<ISessionFactory> SessionFactoryCreated;
+        public event EventHandler<ISessionFactory> OnSessionFactoryCreated;
+
+        public event EventHandler<Configuration> OnConfigurationCreated;
 
         protected abstract Configuration BuildConfiguration(IComponentContext context);
 
         private Configuration GetConfiguration(IComponentContext context)
         {
             var config = BuildConfiguration(context);
+            OnConfigurationCreated?.Invoke(this, config);
             if (!string.IsNullOrEmpty(SchemaRootPath))
             {
                 var schemaExport = new SchemaExport(config);
@@ -41,7 +44,7 @@ namespace nHL.Web.Infrastructure.Persistence
         private ISessionFactory GetSessionFactory(IComponentContext context)
         {
             var sessionFactory = context.Resolve<Configuration>().BuildSessionFactory();
-            SessionFactoryCreated?.Invoke(this, sessionFactory);
+            OnSessionFactoryCreated?.Invoke(this, sessionFactory);
             return sessionFactory;
         }
 
