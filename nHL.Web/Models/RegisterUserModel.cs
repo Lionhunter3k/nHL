@@ -8,24 +8,24 @@ namespace nHL.Web.Models
 {
     public class RegisterUserModel
     {
-        [Required(ErrorMessage = "Username is required")]
+        [Required(ErrorMessageResourceName = "Username is required")]
         [DataType(DataType.Text)]
-        [StringLength(50, ErrorMessage = "Username can't exceed 50 characters")]
+        [StringLength(50, ErrorMessageResourceName = "Username can't exceed 50 characters")]
         public string Username { get; set; }
 
-        [Required(ErrorMessage = "Password is required")]
+        [Required(ErrorMessageResourceName = "Password is required")]
         [DataType(DataType.Password)]
-        [StringLength(50, ErrorMessage = "Password can't exceed 50 characters")]
+        [StringLength(50, ErrorMessageResourceName = "Password can't exceed 50 characters")]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "Confirmation password is required")]
-        [Compare("Password", ErrorMessage = "Confirmation password must be the same as the password")]
+        [Required(ErrorMessageResourceName = "Confirmation password is required")]
+        [Compare("Password", ErrorMessageResourceName = "Confirmation password must be the same as the password")]
         [DataType(DataType.Password)]
         [StringLength(50)]
         public string ConfirmPassword { get; set; }
 
-        [Required(ErrorMessage = "Email is required")]
-        [Email(ErrorMessage = "Email is invalid")]
+        [Required(ErrorMessageResourceName = "Email is required")]
+        [Email(ErrorMessageResourceName = "Email is invalid")]
         [DataType(DataType.EmailAddress)]
         [StringLength(128)]
         public string Email { get; set; }
@@ -53,23 +53,23 @@ namespace nHL.Web.Models
         public string Street { get; set; }
 
         [Required]
-        [RegularExpression(@"([A-Za-zäöüÄÖÜßăîâșțĂÎÂȘȚ\.\\/ ])+", ErrorMessage = "Town cannot contain numbers")]
+        [RegularExpression(@"([A-Za-zäöüÄÖÜßăîâșțĂÎÂȘȚ\.\\/ ])+", ErrorMessageResourceName = "Town cannot contain numbers")]
         [DataType(DataType.Text)]
         [StringLength(100)]
         public string Town { get; set; }
 
         [Required]
-        [RegularExpression(@"(\d)+", ErrorMessage = "Letters are not allowed")]
+        [RegularExpression(@"(\d)+", ErrorMessageResourceName = "Letters are not allowed")]
         [DataType(DataType.Text)]
         [StringLength(25)]
         public string ZipCode { get; set; }
 
-        [RegularExpression(@"([0-9 \.\(\)/\\\-\+])+", ErrorMessage = "Letters are not allowed")]
+        [RegularExpression(@"([0-9 \.\(\)/\\\-\+])+", ErrorMessageResourceName = "Letters are not allowed")]
         [DataType(DataType.PhoneNumber)]
         [StringLength(25)]
         public string Phone { get; set; }
 
-        [RegularExpression(@"([0-9 \.\(\)/\\\-\+])+", ErrorMessage = "Letters are not allowed")]
+        [RegularExpression(@"([0-9 \.\(\)/\\\-\+])+", ErrorMessageResourceName = "Letters are not allowed")]
         [DataType(DataType.PhoneNumber)]
         [StringLength(25)]
         public string Fax { get; set; }
